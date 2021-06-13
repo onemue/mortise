@@ -1,6 +1,7 @@
 (function () {
   let root = this; // root
   let mortises = [];
+  let monitor = [];
   window['mortise'] = {};
   window.onload = function () {
     mortises = document.getElementsByTagName('input'); // 存放 mortises
@@ -8,8 +9,10 @@
     for (let i = 0; i < mortises.length; i++) {
       const element = mortises[i];
       let mortise = element.getAttribute('mortise');
+      console.count('mortise');
       // console.log(eval(mortise) instanceof 'Function');
-      console.log(typeof mortise)
+      console.log(mortise)
+      if (mortise) monitor.push(element);
       console.log(typeof mortise === 'string');
       if (typeof mortise === 'string') {
         // String
@@ -34,10 +37,13 @@
             element.value = element.value.replace(/[^a-z]/g, '');
           }
         else if (mortise === "email")
-        element.oninput = function (params) {
-          element.value = element.value.replace(/[^a-z]/g, '');
-        }
+          element.oninput = function (params) {
+            element.value = element.value.replace(/[^a-z]/g, '');
+          }
+        else
+        console.error(`There is no "${mortise}" type, please reset the mortise type, or initialize the custom "${mortise}" type`);
       }
+      console.log(monitor);
     }
 
   }
