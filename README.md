@@ -26,3 +26,4 @@ Add the 'mortise' attribute to the input to be used
 
 Part of the content has not been developed yet
 
+The demo file is in the test directory
