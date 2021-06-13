@@ -10,3 +10,5 @@
 - char 字母
 - capital 大写字母
 - lowercase 小写字母
+## tips
+部分内容还没有开发完成
