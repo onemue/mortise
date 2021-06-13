@@ -4,7 +4,7 @@ Setting input limit by mortise
 
 [中文版](https://github.com/onemue/mortise/blob/master/README_zh.md)
 
-##How to use it
+## How to use it
 
 Download mortise.js
 
