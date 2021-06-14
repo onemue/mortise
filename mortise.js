@@ -12,15 +12,19 @@
 
       if (mortises) addMonitor(element);
     }
-    for (let i = 0; i < monitor.length; i++) {
-      const element = monitor[i];
-      const mortises = element.getAttribute('mortise');
-
-      mortiseSolve(element, mortises);
-      mortiseObserver(element);
+    for (const key in monitor) {
+      if (Object.hasOwnProperty.call(monitor, key)) {
+        const element = monitor[key];
+        const mortises = element.getAttribute('mortise');
+        console.log(mortises);
+        mortiseSolve(element, mortises);
+        mortiseObserver(element);
+      }
     }
   }
   function mortiseSolve(element, mortises) {
+    console.log(mortises);
+
     if (typeof mortises === 'string') {
       // 判断js是否存在大写字母
       let ifCapitalReg = /[A-Z]/g;
@@ -33,7 +37,7 @@
       mortises = mortises.split('|');
       for (let i = 0; i < mortises.length; i++) {
         const mortise = mortises[i];
-
+        console.log(mortise);
         setSolveFuncs(element, mortise);
       }
     }
@@ -51,7 +55,7 @@
           const mortise = element.getAttribute("mortise");
 
           if (!mortise) reomveMonitor(element);
-            
+
           else setSolveFuncs(element, mortise);
         }
       }
@@ -62,7 +66,7 @@
       // Omit (or set to false) to observe only changes to the parent node
       subtree: false
     }
-    
+
     observer.observe(element, observerOptions);
   }
 
@@ -88,7 +92,7 @@
           }
 
           // 对删除的input元素进行处理
-          if (mutation.removedNodes.length>=0) {
+          if (mutation.removedNodes.length >= 0) {
             mutation.removedNodes.forEach(function (element) {
               if (element.tagName == 'INPUT' && element.getAttribute('mortise'))
                 reomveMonitor(element);
@@ -100,11 +104,11 @@
     const observerOptions = {
       childList: true,
       attributes: true,
-    
+
       // Omit (or set to false) to observe only changes to the parent node
       subtree: true
     }
-    
+
     observer.observe(main, observerOptions);
   }
 
@@ -112,47 +116,45 @@
   function stringSolve(element, mortise) {
     // String number chinese char capital lowercase email
     // TODO 优化事件处理
-    let solveFuncs = [];
+    let rule = {
+      number: '0-9',
+      capital: 'a-z',
+      lowercase: 'A-Z',
+      chinese: '\u4e00-\u9fa5',
+    };
+    let ruleReg = '';
     if (mortise === "number")
-      solveFuncs.push(function () {
+      element.addEventListener('input', function () {
         element.value = element.value.replace(/[^0-9]/g, '');
       });
 
     else if (mortise === "chinese")
-      solveFuncs.push(function () {
+      element.addEventListener('input', function () {
         element.value = element.value.replace(/[^\u4e00-\u9fa5]/g, '');
       });
 
     else if (mortise === "char")
-      solveFuncs.push(function () {
+      element.addEventListener('input', function () {
         element.value = element.value.replace(/[^a-zA-Z]/g, '');
-      })
+      });
 
     else if (mortise === "capital")
-      solveFuncs.push(function () {
+      element.addEventListener('input', function () {
         element.value = element.value.replace(/[^A-Z]/g, '');
-      })
+      });
 
     else if (mortise === "lowercase")
-      solveFuncs.push(function () {
+      element.addEventListener('input', function () {
         element.value = element.value.replace(/[^a-z]/g, '');
-      })
+      });
 
     else if (mortise === "email")
-      solveFuncs.push(function () {
+      element.addEventListener('input', function () {
         element.value = element.value.replace(/[^a-z]/g, '');
-      })
+      });
 
     else
-      solveFuncs.push(function () {
-        console.error(`There is no "${mortise}" type, please reset the mortise type, or initialize the custom "${mortise}" type`);
-      })
-        
-    element.addEventListener('input', function () {
-      solveFuncs.forEach(function (value) {
-        value.call(this);
-      })
-    });
+      console.error(`There is no "${mortise}" type, please reset the mortise type, or initialize the custom "${mortise}" type`);
   }
 
 
@@ -161,7 +163,7 @@
    * @param {Node} element 
    */
   function addMonitor(element) {
-    let monitorId = Object.keys(monitor).length;
+    let monitorId = randomMonitorId();
 
     element.setAttribute("mortise-id", monitorId);
     monitor[monitorId] = element;
@@ -186,6 +188,19 @@
    */
   function setSolveFuncs(element, mortise) {
     // TODO 设置 input 函数
+    console.log(mortise);
     if (typeof mortise === 'string') stringSolve(element, mortise);
+  }
+  function randomMonitorId() {
+    let len = 8;
+    let $chars = 'ABCDEFGHJKMNPQRSTWXYZ2345678';
+    let maxPos = $chars.length;
+    let monitorId = 'MID-'
+    for (i = 0; i < len; i++) {
+      monitorId += $chars.charAt(Math.floor(Math.random() * maxPos));
+    }
+    if (Object.keys(monitor).indexOf(monitorId) == -1)
+      return monitorId;
+    else return randomMonitorId();
   }
 })();
