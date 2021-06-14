@@ -39,7 +39,10 @@
     }
   }
 
-
+  /**
+   * mortise 观察者
+   * @param {Node} element 
+   */
   function mortiseObserver(element) {
     // 观察mortise，如果发生改变调用mortise初始化
     const observer = new MutationObserver(function (mutationsList, observer) {
@@ -63,7 +66,9 @@
     observer.observe(element, observerOptions);
   }
 
-
+  /**
+   * 全局观察者
+   */
   function observer() {
     let main = document.getElementsByTagName('body')[0];
     // 观察mortise，如果发生改变调用mortise初始化
@@ -76,9 +81,8 @@
             mutation.addedNodes.forEach(function (element) {
               if (element.tagName == 'INPUT') addMonitor(element);
               else
-                // BUG 新增元素的子元素有input[mortise]的处理
-                element.getElementsByTagName('input').forEach(function (value) {
-                value.getAttribute('mortise') && addMonitor(element);
+                element.querySelectorAll('input').forEach(function (value) {
+                  value.getAttribute('mortise') && addMonitor(value);
                 })
             })
           }

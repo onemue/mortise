@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,6 +8,7 @@
   <title>Document</title>
   <script src="../mortise.js"></script>
 </head>
+
 <body>
   <p>使用<code>mortise</code>控制属性,使用<code>maxlength</code>控制最大长度</p>
   <p>只能输入数字：</p>
@@ -23,5 +25,25 @@
   <input type="text" mortise="Lowercase|number">
   <p>不设置mortise：</p>
   <input type="text">
+  <p>增加DOM元素：</p>
+  <div id="add-box"></div>
+  <button onclick="addInput()">增加input</button>
+  <button onclick="addInputForSon()">增加自元素包含input</button>
+  <script>
+    var addBox = document.getElementById("add-box");
+    function addInput() {
+      addBox.appendChild(parseDom('<input type="text" mortise="capital" />'));
+    }
+    function addInputForSon() {
+      addBox.appendChild(parseDom('<div><input type="text" mortise="capital" /></div>'));
+    }
+    function parseDom(arg) {
+      var objE = document.createElement("div");
+      objE.innerHTML = arg;
+      console.log(objE.childNodes);
+      return objE.childNodes[0];
+    };
+  </script>
 </body>
+
 </html>
