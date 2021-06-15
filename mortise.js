@@ -1,3 +1,11 @@
+/*!
+ * Mortise JavaScript Library v1.8.0
+ * https://github.com/onemue/mortise
+ *
+ * Author: onemue
+ * Date: 2021-06-15 11:42:39
+ */
+
 (function () {
   let root = this; // root
   let Mortises = []; // 大写是元素
