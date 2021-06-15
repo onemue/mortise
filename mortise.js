@@ -110,40 +110,39 @@
   // string 处理
   function stringSolve(element, mortises) {
     // String number chinese char capital lowercase email
-    console.log(mortises);
-    // TODO 优化complexRule处理
-    let rule = {
+    // TODO 优化complexRule处理 复杂处理
+    let rules = {
       number: '0-9',
+      char :'a-zA-Z',
       capital: 'A-Z',
       lowercase: 'a-z',
       chinese: '\u4e00-\u9fa5',
+      symbol: `~!@#$%^&*()-_=+[]{}\\|;:'",.<>/?`
     };
     let complexRule = {};
     let ruleReg = '';
     mortises = mortises.split('|');
     for (let i = 0; i < mortises.length; i++) {
       const mortise = mortises[i];
-      if (mortise === "number")
-        ruleReg = ruleReg + rule['number'];
-
-      else if (mortise === "chinese")
-        ruleReg = ruleReg + rule['chinese'];
-
-      else if (mortise === "char")
-        ruleReg = ruleReg + rule['char'];
-
-      else if (mortise === "capital")
-        ruleReg = ruleReg + rule['capital'];
-
-      else if (mortise === "lowercase")
-        ruleReg = ruleReg + rule['lowercase'];
-
-      else
+      let isRule = false;
+      for (const key in rules) {
+        if (Object.hasOwnProperty.call(rules, key)) {
+          rule = rules[key];
+          // console.log(mortise, key, rule, mortise == key, mortise === key);
+          if (mortise === key) {
+            ruleReg = ruleReg + rule;
+            // console.log(ruleReg);
+            isRule = true;
+            break;
+          }
+        }
+      }
+      if (isRule === false)
         console.error(`There is no "${mortise}" type, please reset the mortise type, or initialize the custom "${mortise}" type`);
     }
     element.addEventListener('input', function () {
-      console.log('[^' + ruleReg + ']');
-      element.value = element.value.replace( new RegExp('[^' + ruleReg + ']', 'g'), '');
+      console.log('Reg: [^' + ruleReg + ']');
+      element.value = element.value.replace(new RegExp('[^' + ruleReg + ']', 'g'), '');
     })
   }
 
@@ -153,10 +152,11 @@
    * @param {Node} element 
    */
   function addMonitor(element) {
+    const mortises = element.getAttribute('mortise');
     let monitorId = randomMonitorId();
-
     element.setAttribute("mortise-id", monitorId);
     monitor[monitorId] = element;
+    mortiseSolve(element, mortises);
     mortiseObserver(element);
   }
 
@@ -180,8 +180,6 @@
     monitor[monitorId] = undefined;
     observers[monitorId].disconnect();
     observers[monitorId] = undefined;
-    console.log(`id ${monitorId} 被删除`);
-
   }
 
   /**
@@ -190,9 +188,6 @@
    * @param {String} mortise 
    */
   function setSolveFuncs(element, mortise) {
-    // TODO 设置 input 函数
-    console.log(typeof mortise);
-    console.log(mortise)
     if (typeof mortise === 'string') stringSolve(element, mortise);
   }
   function randomMonitorId() {
