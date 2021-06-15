@@ -1,5 +1,5 @@
 /*!
- * Mortise JavaScript Library v1.8.0
+ * Mortise JavaScript Library v1.0.0
  * https://github.com/onemue/mortise
  *
  * Author: onemue
