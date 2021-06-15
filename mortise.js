@@ -2,6 +2,7 @@
   let root = this; // root
   let Mortises = []; // 大写是元素
   let monitor = {};
+  let observers = {};
   window['mortise'] = {};
   window.onload = function () {
     observer();
@@ -16,15 +17,12 @@
       if (Object.hasOwnProperty.call(monitor, key)) {
         const element = monitor[key];
         const mortises = element.getAttribute('mortise');
-        console.log(mortises);
         mortiseSolve(element, mortises);
         mortiseObserver(element);
       }
     }
   }
   function mortiseSolve(element, mortises) {
-    console.log(mortises);
-
     if (typeof mortises === 'string') {
       // 判断js是否存在大写字母
       let ifCapitalReg = /[A-Z]/g;
@@ -33,13 +31,8 @@
         mortises = mortises.toLowerCase();
       }
 
-      // 多类型处理
-      mortises = mortises.split('|');
-      for (let i = 0; i < mortises.length; i++) {
-        const mortise = mortises[i];
-        console.log(mortise);
-        setSolveFuncs(element, mortise);
-      }
+      // 类型处理
+      setSolveFuncs(element, mortises);
     }
   }
 
@@ -60,6 +53,8 @@
         }
       }
     });
+    const mortiseId = element.getAttribute("mortise-id");
+    observers[mortiseId] = observer;
     const observerOptions = {
       childList: false,
       attributes: true,
@@ -113,48 +108,43 @@
   }
 
   // string 处理
-  function stringSolve(element, mortise) {
+  function stringSolve(element, mortises) {
     // String number chinese char capital lowercase email
-    // TODO 优化事件处理
+    console.log(mortises);
+    // TODO 优化complexRule处理
     let rule = {
       number: '0-9',
-      capital: 'a-z',
-      lowercase: 'A-Z',
+      capital: 'A-Z',
+      lowercase: 'a-z',
       chinese: '\u4e00-\u9fa5',
     };
+    let complexRule = {};
     let ruleReg = '';
-    if (mortise === "number")
-      element.addEventListener('input', function () {
-        element.value = element.value.replace(/[^0-9]/g, '');
-      });
+    mortises = mortises.split('|');
+    for (let i = 0; i < mortises.length; i++) {
+      const mortise = mortises[i];
+      if (mortise === "number")
+        ruleReg = ruleReg + rule['number'];
 
-    else if (mortise === "chinese")
-      element.addEventListener('input', function () {
-        element.value = element.value.replace(/[^\u4e00-\u9fa5]/g, '');
-      });
+      else if (mortise === "chinese")
+        ruleReg = ruleReg + rule['chinese'];
 
-    else if (mortise === "char")
-      element.addEventListener('input', function () {
-        element.value = element.value.replace(/[^a-zA-Z]/g, '');
-      });
+      else if (mortise === "char")
+        ruleReg = ruleReg + rule['char'];
 
-    else if (mortise === "capital")
-      element.addEventListener('input', function () {
-        element.value = element.value.replace(/[^A-Z]/g, '');
-      });
+      else if (mortise === "capital")
+        ruleReg = ruleReg + rule['capital'];
 
-    else if (mortise === "lowercase")
-      element.addEventListener('input', function () {
-        element.value = element.value.replace(/[^a-z]/g, '');
-      });
+      else if (mortise === "lowercase")
+        ruleReg = ruleReg + rule['lowercase'];
 
-    else if (mortise === "email")
-      element.addEventListener('input', function () {
-        element.value = element.value.replace(/[^a-z]/g, '');
-      });
-
-    else
-      console.error(`There is no "${mortise}" type, please reset the mortise type, or initialize the custom "${mortise}" type`);
+      else
+        console.error(`There is no "${mortise}" type, please reset the mortise type, or initialize the custom "${mortise}" type`);
+    }
+    element.addEventListener('input', function () {
+      console.log('[^' + ruleReg + ']');
+      element.value = element.value.replace( new RegExp('[^' + ruleReg + ']', 'g'), '');
+    })
   }
 
 
@@ -176,9 +166,22 @@
    */
   function reomveMonitor(element) {
     let monitorId = element.getAttribute("mortise-id");
-
+    if (!monitorId) { // 如果元素中没有monitorId
+      for (const key in monitor) {
+        if (Object.hasOwnProperty.call(monitor, key)) {
+          const val = monitor[key];
+          if (val === element) {
+            monitorId = key;
+          }
+        }
+      }
+    }
+    // 垃圾处理
     monitor[monitorId] = undefined;
+    observers[monitorId].disconnect();
+    observers[monitorId] = undefined;
     console.log(`id ${monitorId} 被删除`);
+
   }
 
   /**
@@ -188,7 +191,8 @@
    */
   function setSolveFuncs(element, mortise) {
     // TODO 设置 input 函数
-    console.log(mortise);
+    console.log(typeof mortise);
+    console.log(mortise)
     if (typeof mortise === 'string') stringSolve(element, mortise);
   }
   function randomMonitorId() {
