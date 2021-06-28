@@ -7,6 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="../mortise.js"></script>
+  <script>
+    // console.log();
+    Mortise.init();
+
+  </script>
 </head>
 
 <body>
@@ -16,15 +21,17 @@
   <p>只能输入字母：</p>
   <input type="text" mortise="char">
   <p>只能输入大写字母：</p>
-  <input type="text" mortise="capital">
+  <input type="text" mortise="Capital">
   <p>只能输入小写字母：</p>
-  <input type="text" mortise="Lowercase">
+  <input type="text" mortise="lowercase">
   <p>只能输入汉字：</p>
   <input type="text" mortise="chinese">
   <p>只能输入小写字母和数字：</p>
-  <input type="text" mortise="Lowercase|number">
+  <input type="text" mortise="lowercase|number">
   <p>不设置mortise：</p>
-  <input type="text">
+  <input type="text" id="str">
+  <input type="text" id="dom">
+
   <p>增加DOM元素：</p>
   <div id="add-box"></div>
   <button onclick="addInput()">增加input</button>
@@ -44,6 +51,12 @@
       return objE.childNodes[0];
     };
   </script>
+    <script>
+      // console.log();
+      Mortise.init();
+      Mortise.bind('#str', 'number');
+      Mortise.bind(dom, 'number');
+    </script>
 </body>
 
 </html>
