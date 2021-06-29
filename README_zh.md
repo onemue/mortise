@@ -11,7 +11,22 @@
 ```html
   <script src="../mortise.js"></script>
   <script>
-    Mortise.init();
+    Mortise.init();// 初始化 Mortise
+    Mortise.bind('#str', 'number'); // 动态绑定 Mortise
+    Mortise.verify({
+        'idCard': (element)=>{
+          // console.log(element);
+          console.log(element.value);
+          
+          if(element.value.lenght <= 17){
+            element.value = element.value.replace(/[^0-9]/g, '');
+          }
+          else{
+            element.value = element.value.replace(/[^0-9X]/g, '');
+          }
+          element.value = element.value.slice(0,18);
+        }
+      }); // 动态创建 Mortise 限制条件
   </script>
 ```
 在需要限制的input元素增加mortise属性例如

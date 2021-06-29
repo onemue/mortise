@@ -21,7 +21,8 @@ For example:
 
 <script>
 
-Mortise.init();
+Mortise.init(); 
+
 
 </script>
 
@@ -37,21 +38,21 @@ Add the modify attribute to the input element that needs to be restricted, such 
 
 ```
 
->You can use the bind function to dynamically bind in JS
+> You can use the bind function to dynamically bind in JS
 
->Parameter one can be a selector or a DOM object
+> Parameter one can be a selector or a DOM object
 
->The second parameter is the binding content
+> The second parameter is the binding content
 
 ## mortise
 
--Number number
+- Number number
 
--Char letter
+- Char letter
 
--Capital capital
+- Capital capital
 
--Lowercase
+- Lowercase
 
 ## tips
 

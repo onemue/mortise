@@ -29,6 +29,10 @@
   <p>只能输入小写字母和数字：</p>
   <input type="text" mortise="lowercase|number">
   <p>不设置mortise：</p>
+  <input type="text" mortise="idCard">
+  <input type="text" mortise="title">
+
+
   <input type="text" id="str">
   <input type="text" id="dom">
 
@@ -56,6 +60,20 @@
       Mortise.init();
       Mortise.bind('#str', 'number');
       Mortise.bind(dom, 'number');
+      Mortise.verify({
+        'idCard': (element)=>{
+          // console.log(element);
+          console.log(element.value);
+          
+          if(element.value.lenght <= 17){
+            element.value = element.value.replace(/[^0-9]/g, '');
+          }
+          else{
+            element.value = element.value.replace(/[^0-9X]/g, '');
+          }
+          element.value = element.value.slice(0,18);
+        }
+      });
     </script>
 </body>
 

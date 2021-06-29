@@ -136,6 +136,7 @@
     // String number chinese char capital lowercase email
     // TODO 优化complexRule处理 复杂处理
     let ruleReg = '';
+    let ifRule = false;
     mortises = mortises.toLowerCase().split('|');
     for (let i = 0; i < mortises.length; i++) {
       const mortise = mortises[i];
@@ -147,18 +148,36 @@
           if (mortise === key) {
             ruleReg = ruleReg + rule;
             // console.log(ruleReg);
+            ifRule = true;
             isRule = true;
             break;
           }
         }
       }
-      if (isRule === false)
-        console.error(`There is no "${mortise}" type, please reset the mortise type, or initialize the custom "${mortise}" type`);
     }
-    element.addEventListener('input', function () {
-      // console.log('Reg: [^' + ruleReg + ']');
-      element.value = element.value.replace(new RegExp('[^' + ruleReg + ']', 'g'), '');
-    });
+    if (mortises.length == 1 && !ifRule) {
+      for (const key in __complexRule) {
+        if (Object.hasOwnProperty.call(__complexRule, key)) {
+          rule = __complexRule[key];
+          console.log(key, mortises[0], mortises[0] === key);
+          // console.log(key, rule, mortises[0] == key, mortises[0] === key);
+          if (mortises[0] == key) {
+            // console.log(rule);
+            element.addEventListener('input', () => {
+              // console.log(__complexRule[key]);
+              __complexRule[key](element)
+            });
+            // console.log(getEventListneres(element).input);
+            break;
+          }
+        }
+      }
+    } else {
+      element.addEventListener('input', function () {
+        // console.log('Reg: [^' + ruleReg + ']');
+        element.value = element.value.replace(new RegExp('[^' + ruleReg + ']', 'g'), '');
+      }); 
+    }
   }
 
   /**
@@ -257,26 +276,41 @@
       __addMonitor(element);
     }
   }
+  function verify() {
+    let arg = arguments;
+    // console.log(arg,typeof arg);
+    // console.log(arg.length);
 
+    if (arg.length == 2) {
+      // console.log(arg.length);
+      const key = arg[0];
+      const content = arg[1];
+      __complexRule[key] = content;
+    }
+    else if (arg.length == 1) {
+      if (typeof arg[0] == 'string') {
+        const content = arg[0];
+        __complexRule[content] = '';
+        console.warn(`No Mortise!`);
+      }
+      else if (typeof arg[0] == 'object') {
+        let verify = arg[0];
+        // console.log(Object.keys(verify))
+        Object.keys(verify).forEach(function (key, index) {
+          // console.log(key,verify[key]);
+          __complexRule[key.toLowerCase()] = verify[key]; // 如果是对象
+        });
+      }
+    }
+    else if(arg.length>2){
+      console.error(`Parameter configuration error`);
+    }
+    ;
+  }
 
   window['Mortise'] = {};
   window['Mortise']['init'] = Mortise;
   window['Mortise']['bind'] = bind;
-  // window['Mortise']['verify'] = function () {
-  //   let arg = arguments;
-  //   if (arg.length != 1) {
-  //     console.log(arg.length);
-  //     const key = arg[0];
-  //     const content = arg[1];
-  //     if (typeof content == 'function') {
-        
-  //     }
-  //     else if (typeof content == 'object') {
-        
-  //     }
-  //   } else {
-  //     console.error(`Parameter configuration error`);
-  //   }
-  //   __complexRule;
-  // }
+  window['Mortise']['verify'] = verify;
+  window['Mortise']['complexRule'] = __complexRule;
 })();
