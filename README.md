@@ -1,17 +1,15 @@
 # mortise
 
-Setting input limit by mortise
+Set input input limit by mortise
 
 [中文版](https://github.com/onemue/mortise/blob/master/README_zh.md)
-
-
-##How to use it
+## How to use
 
 Download mortise.js
 
-Introducing JS into HTML
+Introduce JS into HTML
 
-Add the 'mortise' attribute to the input to be used
+Add the 'mortise' attribute to the input you want to use
 
 For example:
 
@@ -21,28 +19,44 @@ For example:
 
 <script>
 
-Mortise.init(); 
+Mortise.init();// Initialize mortise
 
+Mortise.bind('#str', 'number'); // Dynamic binding mortise
+
+Mortise.verify({
+  'idCard': (element) => {
+    // console.log(element);
+
+    console.log(element.value);
+    if (element.value.lenght <= 17) {
+      element.value = element.value.replace(/[^0-9]/g, '');
+    }
+    else {
+      element.value = element.value.replace(/[^0-9X]/g, '');
+    }
+    element.value = element.value.slice(0, 18);
+  }
+}); // Dynamically create mortise constraints
 
 </script>
 
 ```
 
-Add the modify attribute to the input element that needs to be restricted, such as
+Add the mortise attribute to the input element that needs to be restricted, for example
 
 ```html
 
 <input type='text' mortise='number'/>
 
-<!-- It is suggested that lowercase characters should be converted to lowercase if they contain uppercase letters, and then matched -- >
+<!-- The mortise property recommends that lowercase if it contains uppercase letters, it will be converted to lowercase and then matched -- >
 
 ```
 
-> You can use the bind function to dynamically bind in JS
+>You can use bind function to bind dynamically in JS
 
-> Parameter one can be a selector or a DOM object
+>Parameter one can be a selector or a DOM object
 
-> The second parameter is the binding content
+>Parameter 2 is the binding content
 
 ## mortise
 
@@ -52,10 +66,11 @@ Add the modify attribute to the input element that needs to be restricted, such 
 
 - Capital capital
 
-- Lowercase
+- Lowercase small letter
 
 ## tips
 
-Part of the content has not been developed yet
+Some of the content has not been developed yet
 
-The demo file is in the test directory
+Demo file is in the test directory
+
