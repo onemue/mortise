@@ -133,7 +133,6 @@
   // string 处理
   function __stringSolve(element, mortises) {
     // String number chinese char capital lowercase email
-    // TODO 优化complexRule处理 复杂处理
     let ruleReg = '';
     let ifRule = false;
     mortises = mortises.toLowerCase().split('|');
@@ -209,6 +208,10 @@
         }
       }
     }
+    // 移除 mortise 相关属性
+    element.removeAttribute("mortise-id");
+    element.removeAttribute("mortise");
+    
     // 垃圾处理
     // __observers 会自主处理
     __monitor[monitorId]&&(__monitor[monitorId] = undefined);
@@ -243,6 +246,17 @@
     else
       return __randomMonitorId();
   }
+  /**
+   * 动态绑定
+   * @param {String} element
+   * @param {object}
+   * {
+   *  el: '#id',
+   *  mortise: 'number',
+   *  maxlength: 19
+   * }
+   * @returns 
+   */
   function bind() {
     let arg = arguments;
     if (arg.length === 1) {
@@ -322,12 +336,28 @@
     else if(arg.length>2){
       console.error(`Parameter configuration error`);
     }
-    ;
+  }
+  function remove() {
+    let arg = arguments;
+    let element = arg[0];
+    if (typeof arg[0] === "string") {
+      if (arg[0].find('MID') != -1) {
+        
+      } else {
+        element = __monitor[arg[0]];
+      }
+    }
+    else if (!(element instanceof HTMLElement)) {
+      console.error('The function bind can only enter string and node objects.');
+      return;
+    }
+    __reomveMonitor(element)
   }
 
   window['Mortise'] = {};
   window['Mortise']['init'] = Mortise;
   window['Mortise']['bind'] = bind;
   window['Mortise']['verify'] = verify;
+  window['Mortise']['remove'] = remove;
   window['Mortise']['complexRule'] = __complexRule;
 })();
