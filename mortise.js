@@ -6,7 +6,6 @@
  * Date: 2021-06-15 11:42:39
  */
 (function () {
-  let root = this; // root
   let __Mortises = []; // 大写是元素
   let __monitor = {};
   let __observers = {};
@@ -187,6 +186,7 @@
   function __addMonitor(element) {
     const mortises = element.getAttribute('mortise');
     let monitorId = __randomMonitorId();
+    element.setAttribute('type', 'text');
     element.setAttribute("mortise-id", monitorId);
     __monitor[monitorId] = element;
     __mortiseSolve(element, mortises);
@@ -249,6 +249,23 @@
       let element = arg[0];
       if (typeof element == 'string')
         element = document.querySelectorAll(element);
+      else if (typeof element == 'object') {
+        let element = element['el'];
+        let mortise = element['mortise'];
+        let maxlength = element['maxlength'];
+
+        if (typeof element == 'string') {
+          element = document.querySelectorAll(element);
+        }
+        else if (!(element instanceof HTMLElement)) {
+          console.error('The function bind can only enter string and node objects.');
+          return;
+        }
+
+        // 设置 mortise
+        element.setAttribute('mortise', mortise);
+        element.setAttribute('maxlength', maxlength);
+      }
       __addMonitor(element);
     }
     else if (arg.length === 2) {
