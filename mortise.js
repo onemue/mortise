@@ -9,6 +9,7 @@
   let __Mortises = []; // 大写是元素
   let __monitor = {};
   let __observers = {};
+  let __classForMinlength = 'less-mortise-class';
   let __rules = {
     number: '0-9',
     char: 'a-zA-Z',
@@ -26,8 +27,11 @@
     for (let i = 0; i < __Mortises.length; i++) {
       const element = __Mortises[i];
       let mortises = element.getAttribute('mortise'); // 小写是类型
+      let minlength = element.getAttribute('minlength'); // 如果限制最小位数
+
       // console.log(!mortises);
       if (mortises) __addMonitor(element);
+      else if (minlength) __addMonitor(element);
     }
     for (const key in __monitor) {
       if (Object.hasOwnProperty.call(__monitor, key)) {
@@ -51,6 +55,26 @@
       // 类型处理
       __setSolveFuncs(element, mortises);
     }
+  }
+
+  function __minlengthSolve(element, minlength) {
+    // TODO 最小长度限制
+    // __classForMinlength
+    element.addEventListener('input', function () {
+      let length = Number(element.value.length);
+      let classList = element.classList;
+
+      if (length < minlength && length > 0) {
+        if (!(classList.contains(__classForMinlength))) {
+          element.classList.add(__classForMinlength);
+          __showTips('位数过低', element);
+        }
+      } else {
+        if ((classList.contains(__classForMinlength))) {
+          element.classList.remove(__classForMinlength);
+        }
+      }
+    })
   }
 
   /**
@@ -136,6 +160,8 @@
     let ruleReg = '';
     let ifRule = false;
     mortises = mortises.toLowerCase().split('|');
+
+    // 多种类型处理
     for (let i = 0; i < mortises.length; i++) {
       const mortise = mortises[i];
       let isRule = false;
@@ -153,11 +179,12 @@
         }
       }
     }
+
     if (mortises.length == 1 && !ifRule) {
       for (const key in __complexRule) {
         if (Object.hasOwnProperty.call(__complexRule, key)) {
           rule = __complexRule[key];
-          console.log(key, mortises[0], mortises[0] === key);
+          // console.log(key, mortises[0], mortises[0] === key);
           // console.log(key, rule, mortises[0] == key, mortises[0] === key);
           if (mortises[0] == key) {
             // console.log(rule);
@@ -174,7 +201,7 @@
       element.addEventListener('input', function () {
         // console.log('Reg: [^' + ruleReg + ']');
         element.value = element.value.replace(new RegExp('[^' + ruleReg + ']', 'g'), '');
-      }); 
+      });
     }
   }
 
@@ -184,11 +211,13 @@
    */
   function __addMonitor(element) {
     const mortises = element.getAttribute('mortise');
+    const minlength = element.getAttribute('minlength');
     let monitorId = __randomMonitorId();
     element.setAttribute('type', 'text');
     element.setAttribute("mortise-id", monitorId);
     __monitor[monitorId] = element;
-    __mortiseSolve(element, mortises);
+    mortises && __mortiseSolve(element, mortises);
+    minlength && __minlengthSolve(element, minlength);
     __mortiseObserver(element);
   }
 
@@ -211,12 +240,12 @@
     // 移除 mortise 相关属性
     element.removeAttribute("mortise-id");
     element.removeAttribute("mortise");
-    
+
     // 垃圾处理
     // __observers 会自主处理
-    __monitor[monitorId]&&(__monitor[monitorId] = undefined);
-    __observers[monitorId]&&(__observers[monitorId].disconnect());
-    __observers[monitorId]&&(__observers[monitorId] = undefined);
+    __monitor[monitorId] && (__monitor[monitorId] = undefined);
+    __observers[monitorId] && (__observers[monitorId].disconnect());
+    __observers[monitorId] && (__observers[monitorId] = undefined);
   }
 
   /**
@@ -246,6 +275,65 @@
     else
       return __randomMonitorId();
   }
+
+  function __showTips(tips, element) {
+    // TODO 显示提示
+    var id = element.getAttribute('mortise-id');
+    var elementRect = element.getBoundingClientRect();
+    var elementLeft = offSet(element).left;
+    var elementTop = offSet(element).top;
+    var elementRight = elementRect.right;
+    var elementBottom = elementRect.bottom;
+    var elementHeight = element.offsetHeight;
+    var elementWidth = element.offsetWidth;
+
+    // 计算tips位置
+    tipsHeight = 24;
+    tipsWidth = elementWidth;
+    tipsTop = elementTop - tipsHeight;
+    tipsLeft = elementLeft;
+
+    let body = document.querySelector('body');
+    let styleText = `position: absolute;top:${tipsTop}px;left:${tipsLeft}px;height:${tipsHeight}px;width:${tipsWidth}px;`;
+    let tipsHtml = `<div id="${id}" class="mosrtise-tips" style="${styleText}">${tips}</div>`
+    let tipsDom = newDom(tipsHtml);
+    tipsDom;
+    body.append(tipsDom);
+    setInterval(function () {
+      document.querySelector('#'+id).remove();
+    }, 2000);
+  }
+
+  function newDom(html) {
+    let para = document.createElement("div");
+    para.innerHTML = html;
+    let dom = para.childNodes[0];
+    return dom;
+  }
+
+  function offSet(curEle) {
+    var totalLeft = null;
+    var totalTop = null;
+    var par = curEle.offsetParent;
+    //首先把自己本身的相加
+    totalLeft += curEle.offsetLeft;
+    totalTop += curEle.offsetTop;
+    //现在开始一级一级往上查找，只要没有遇到body，我们就把父级参照物的边框和偏移相加
+    while (par){
+        if (navigator.userAgent.indexOf("MSIE 8.0") === -1){
+            //不是IE8我们才进行累加父级参照物的边框
+            totalTop += par.clientTop;
+            totalLeft += par.clientLeft;
+        }
+        //把父级参照物的偏移相加
+        totalTop += par.offsetTop;
+        totalLeft += par.offsetLeft;
+        par = par.offsetParent;
+    }
+    return {left: totalLeft,top: totalTop};
+    //返回一个数组，方便我们使用哦。
+}
+
   /**
    * 动态绑定
    * @param {String} element
@@ -261,24 +349,47 @@
     let arg = arguments;
     if (arg.length === 1) {
       let element = arg[0];
+      let elements;
+      let mortise;
+      let maxlength
       if (typeof element == 'string')
-        element = document.querySelectorAll(element);
+        elements = document.querySelectorAll(element);
       else if (typeof element == 'object') {
-        let element = element['el'];
-        let mortise = element['mortise'];
-        let maxlength = element['maxlength'];
+        element = arg[0]['el'];
+        mortise = arg[0]['mortise'];
+        maxlength = arg[0]['maxlength'];
 
         if (typeof element == 'string') {
-          element = document.querySelectorAll(element);
+          elements = document.querySelectorAll(element);
         }
         else if (!(element instanceof HTMLElement)) {
           console.error('The function bind can only enter string and node objects.');
           return;
         }
+      }
 
-        // 设置 mortise
-        element.setAttribute('mortise', mortise);
-        element.setAttribute('maxlength', maxlength);
+      if (elements != 'undefined') {
+        elements.forEach(function (element) {
+          // console.log(typeof mortise);
+          if (typeof mortise === 'string') {
+            // 设置 mortise
+            element.setAttribute('mortise', mortise);
+          }
+          else {
+            console.error('The function bind parameter mortise can only enter a string.');
+            return;
+          }
+          if ((typeof mortise === 'string') || (typeof mortise === 'number')) {
+            // 设置 maxlength
+            element.setAttribute('maxlength', maxlength);
+          }
+          else {
+            console.error('The function bind parameter mortise can only enter a string.');
+            return;
+          }
+          __addMonitor(element);
+        });
+        return;
       }
       __addMonitor(element);
     }
@@ -333,7 +444,7 @@
         });
       }
     }
-    else if(arg.length>2){
+    else if (arg.length > 2) {
       console.error(`Parameter configuration error`);
     }
   }
@@ -342,7 +453,7 @@
     let element = arg[0];
     if (typeof arg[0] === "string") {
       if (arg[0].find('MID') != -1) {
-        
+
       } else {
         element = __monitor[arg[0]];
       }
@@ -353,6 +464,9 @@
     }
     __reomveMonitor(element)
   }
+  function changeClassForMinlength(className) {
+    __classForMinlength = className;
+  }
 
   window['Mortise'] = {};
   window['Mortise']['init'] = Mortise;
@@ -360,4 +474,5 @@
   window['Mortise']['verify'] = verify;
   window['Mortise']['remove'] = remove;
   window['Mortise']['complexRule'] = __complexRule;
+  window['Mortise']['changeClassForMinlength'] = changeClassForMinlength;
 })();

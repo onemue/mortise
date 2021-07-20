@@ -1,7 +1,7 @@
 # mortise
 
 通过 mortise 来设置 input 输入限制
-
+![](images/Mortise.png)
 ## 使用方法
 
 下载 mortise.js

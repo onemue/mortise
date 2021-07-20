@@ -12,6 +12,27 @@
     Mortise.init();
 
   </script>
+  <style>
+    .less-mortise-class{
+      border: #ff000060 2px solid;
+      /* border-top: none; */
+      /* border: 25px solid #e8e8d3; */
+      /* box-shadow: 0 0 1px 2px red; */
+    }
+    
+    .less-mortise-class::before{
+      content: '请输入制定内容！'; 
+    }
+    .less-mortise-class:focus{
+      border: #ff000060 2px solid;
+      box-shadow: 0 0 2px 2px #ff000060;
+    }
+    .mosrtise-tips{
+      background: #ff000060;
+      /* border: #ffcc91; */
+      color: #FFF;
+    }
+  </style>
 </head>
 
 <body>
@@ -31,9 +52,16 @@
   <p>不设置mortise：</p>
   <input type="text" mortise="idCard">
   <input type="text" mortise="title">
+  <p>最少8位数字最多16位数字：</p>
+  <input type="text" minlength="8" maxlength="18">
+  <input type="text" minlength="8" maxlength="18">
 
+  <input type="text" minlength="8" maxlength="18">
+  <input type="text" minlength="8" maxlength="18">
 
+  <p>str:</p>
   <input type="text" id="str">
+  <p>dom:</p>
   <input type="text" id="dom">
 
   <p>增加DOM元素：</p>
@@ -58,7 +86,6 @@
     <script>
       // console.log();
       Mortise.init();
-      Mortise.bind('#str', 'number');
       Mortise.bind(dom, 'number');
       Mortise.verify({
         'idCard': (element)=>{
@@ -73,6 +100,12 @@
           }
           element.value = element.value.slice(0,18);
         }
+      });
+      // Mortise.changeClassForMinlength('aaa');
+      Mortise.bind({
+        el: '#str',
+        mortise: 'idCard',
+        maxlength: 18
       });
     </script>
 </body>
