@@ -293,7 +293,9 @@
         element = arg[0]['el'];
         mortise = arg[0]['mortise'];
         maxlength = arg[0]['maxlength'];
+        minlength = arg[0]['minlength'];
 
+        // TODO minlength 手动绑定
         if (typeof element == 'string') {
           elements = document.querySelectorAll(element);
         }
@@ -319,6 +321,8 @@
           if ((typeof mortise === 'string') || (typeof mortise === 'number')) {
             // 设置 maxlength
             element.setAttribute('maxlength', maxlength);
+            element.setAttribute('minlength', minlength);
+
           }
           else {
             console.error('The function bind parameter mortise can only enter a string.');
